@@ -14,7 +14,7 @@ Install from MELPA and run =org-sticky-header-mode=.
 
 To install manually, put this file in your =load-path=, =(require 'org-sticky-header)= in your init file, and run =org-sticky-header-mode=.
 
-You'll probably want to add =org-sticky-func-mode= to your =org-mode-hook= too.
+You'll probably want to add =org-sticky-header-mode= to your =org-mode-hook= too.
 
 * License
 
