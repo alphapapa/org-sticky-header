@@ -60,6 +60,13 @@
                 (const :tag "Show full outline path to current heading" full)
                 (const :tag "Show full outline path, but reversed so current heading is first" reversed)))
 
+(defcustom org-sticky-header-prefix "   "
+  "Prefix to display before heading in header line.
+You can adjust this to help align the heading according to your
+face settings.  (It would be nice to automate this.  Suggestions
+welcome.)"
+  :type 'string)
+
 (defun org-sticky-header--fetch-stickyline ()
   "Make the heading at the top of the current window sticky.
 Capture its heading line, and place it in the header line.
@@ -68,13 +75,13 @@ If there is no heading, disable the header line."
     (goto-char (window-start))
     (unless (org-at-heading-p)
       (org-back-to-heading)
-      ;; TODO: 3 spaces seems to be almost right, but it's still not
-      ;; perfect, and it's probably not universally right.  Something
-      ;; related to org-indent might be good.
       (pcase org-sticky-header-full-path
-        (`nil (concat "   " (org-get-heading t t)))
-        ('full (org-format-outline-path (org-get-outline-path t) nil "   "))
-        ('reversed (s-join "\\" (nreverse (s-split "/" (org-format-outline-path (org-get-outline-path t) nil "   ")))))))))
+        ('nil (concat org-sticky-header-prefix (org-get-heading t t)))
+        ('full (concat org-sticky-header-prefix (org-format-outline-path (org-get-outline-path t) nil)))
+        ('reversed (concat org-sticky-header-prefix
+                           (s-join "\\" (nreverse (s-split "-org-sticky-header-separator-"
+                                                           (org-format-outline-path (org-get-outline-path t)
+                                                                                    nil nil "-org-sticky-header-separator-"))))))))))
 
 ;;;###autoload
 (define-minor-mode org-sticky-header-mode
