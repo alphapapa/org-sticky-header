@@ -50,10 +50,15 @@
            (org-sticky-header--fetch-stickyline)))
   "The header line format used by stickyfunc mode.")
 
+(defgroup org-sticky-header nil
+  "Options for `org-sticky-header-mode'."
+  :group 'org)
+
 (defcustom org-sticky-header-full-path nil
   "Show the full outline path."
-  :type 'boolean
-  :group 'org)
+  :type '(radio (const :tag "Show only current heading" nil)
+                (const :tag "Show full outline path to current heading" full)
+                (const :tag "Show full outline path, but reversed so current heading is first" reversed)))
 
 (defun org-sticky-header--fetch-stickyline ()
   "Make the heading at the top of the current window sticky.
@@ -66,9 +71,10 @@ If there is no heading, disable the header line."
       ;; TODO: 3 spaces seems to be almost right, but it's still not
       ;; perfect, and it's probably not universally right.  Something
       ;; related to org-indent might be good.
-      (if org-sticky-header-full-path
-          (org-format-outline-path (org-get-outline-path t) nil "   ")
-        (concat "   " (buffer-substring (line-beginning-position) (line-end-position)))))))
+      (pcase org-sticky-header-full-path
+        (`nil (concat "   " (org-get-heading t t)))
+        ('full (org-format-outline-path (org-get-outline-path t) nil "   "))
+        ('reversed (s-join "\\" (nreverse (s-split "/" (org-format-outline-path (org-get-outline-path t) nil "   ")))))))))
 
 ;;;###autoload
 (define-minor-mode org-sticky-header-mode
