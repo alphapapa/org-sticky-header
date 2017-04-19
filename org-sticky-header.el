@@ -60,6 +60,17 @@
                 (const :tag "Show full outline path to current heading" full)
                 (const :tag "Show full outline path, but reversed so current heading is first" reversed)))
 
+(defcustom org-sticky-header-always-show-header t
+  "Show the header even when the top line of the buffer is a heading.
+When this is on, and the top line of the buffer is a heading,
+you'll see the heading shown twice: once in the header and once
+in the buffer.  But since the header can look different than the
+heading (i.e. it can show the full path), it shouldn't
+necessarily disappear. If you use full-path display, you probably
+want this on, but if you only display the current heading, you
+might prefer to turn it off.  "
+  :type 'boolean)
+
 (defcustom org-sticky-header-prefix "   "
   "Prefix to display before heading in header line.
 You can adjust this to help align the heading according to your
@@ -73,7 +84,8 @@ Capture its heading line, and place it in the header line.
 If there is no heading, disable the header line."
   (save-excursion
     (goto-char (window-start))
-    (unless (org-at-heading-p)
+    (when (or org-sticky-header-always-show-header
+              (not (org-at-heading-p)))
       (org-back-to-heading)
       (pcase org-sticky-header-full-path
         ('nil (concat org-sticky-header-prefix (org-get-heading t t)))
