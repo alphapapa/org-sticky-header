@@ -3,7 +3,7 @@
 ;; Author: Adam Porter <adam@alphapapa.net>
 ;; Url: http://github.com/alphapapa/org-sticky-header
 ;; Version: 0.1.0-pre
-;; Package-Requires: ((emacs "24.4") (s "1.10.0"))
+;; Package-Requires: ((emacs "24.4") (dash "2.13.0") (s "1.10.0"))
 ;; Keywords: hypermedia, outlines, Org
 
 ;;; Commentary:
@@ -41,6 +41,7 @@
 
 ;;; Code:
 
+(require 'dash)
 (require 's)
 
 (defvar org-sticky-header-old-hlf nil
@@ -93,15 +94,13 @@ If there is no heading, disable the header line."
         ('nil (concat org-sticky-header-prefix (org-get-heading t t)))
         ('full (concat org-sticky-header-prefix (org-format-outline-path (org-get-outline-path t) (window-width))))
         ('reversed (concat org-sticky-header-prefix
-                           (s-join "\\"
-                                   (nreverse (s-split
-                                              ;; "CAT FACE" as separator character. It needs to be a single character,
-                                              ;; otherwise it could get truncated and cause splitting to fail, and the
-                                              ;; chances of this character being in a heading is low enough...right?
-                                              "🐱"
-                                              (org-format-outline-path (org-get-outline-path t)
-                                                                       (window-width)
-                                                                       nil "🐱"))))))))))
+                           ;; Using "🐱" "CAT FACE" as separator character. It needs to be a single character,
+                           ;; otherwise it could get truncated and cause splitting to fail, and the chances of this
+                           ;; character being in a heading is low enough...right?
+                           (->> (org-format-outline-path (org-get-outline-path t) (window-width) nil "🐱")
+                                (s-split "🐱")
+                                (nreverse)
+                                (s-join "\\"))))))))
 
 ;;;###autoload
 (define-minor-mode org-sticky-header-mode
