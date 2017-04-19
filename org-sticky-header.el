@@ -89,11 +89,17 @@ If there is no heading, disable the header line."
       (org-back-to-heading)
       (pcase org-sticky-header-full-path
         ('nil (concat org-sticky-header-prefix (org-get-heading t t)))
-        ('full (concat org-sticky-header-prefix (org-format-outline-path (org-get-outline-path t) nil)))
+        ('full (concat org-sticky-header-prefix (org-format-outline-path (org-get-outline-path t) (window-width))))
         ('reversed (concat org-sticky-header-prefix
-                           (s-join "\\" (nreverse (s-split "-org-sticky-header-separator-"
-                                                           (org-format-outline-path (org-get-outline-path t)
-                                                                                    nil nil "-org-sticky-header-separator-"))))))))))
+                           (s-join "\\"
+                                   (nreverse (s-split
+                                              ;; "CAT FACE" as separator character. It needs to be a single character,
+                                              ;; otherwise it could get truncated and cause splitting to fail, and the
+                                              ;; chances of this character being in a heading is low enough...right?
+                                              "🐱"
+                                              (org-format-outline-path (org-get-outline-path t)
+                                                                       (window-width)
+                                                                       nil "🐱"))))))))))
 
 ;;;###autoload
 (define-minor-mode org-sticky-header-mode
