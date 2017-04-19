@@ -3,7 +3,7 @@
 ;; Author: Adam Porter <adam@alphapapa.net>
 ;; Url: http://github.com/alphapapa/org-sticky-header
 ;; Version: 0.1.0-pre
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "24.4") (s "1.10.0"))
 ;; Keywords: hypermedia, outlines, Org
 
 ;;; Commentary:
@@ -40,6 +40,8 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Code:
+
+(require 's)
 
 (defvar org-sticky-header-old-hlf nil
   "Value of the header line when entering org-sticky-header mode.")
