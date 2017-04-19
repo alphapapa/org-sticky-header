@@ -4,6 +4,8 @@
 
 * org-sticky-header
 
+[[https://melpa.org/#/org-sticky-header][file:https://melpa.org/packages/org-sticky-header-badge.svg]]
+
 This package displays in the header-line the Org heading for the node that's at the top of the window.  This way, if the heading for the text at the top of the window is beyond the top of the window, you don't forget which heading the text belongs to.  The display can be customized to show just the heading, the full outline path, or the full outline path in reverse.
 
 Here's a screenshot showing the reversed-path setting:
