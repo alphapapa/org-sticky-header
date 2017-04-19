@@ -3,7 +3,7 @@
 ;; Author: Adam Porter <adam@alphapapa.net>
 ;; Url: http://github.com/alphapapa/org-sticky-header
 ;; Version: 0.1.0-pre
-;; Package-Requires: ((emacs "24.4") (dash "2.13.0") (s "1.10.0"))
+;; Package-Requires: ((emacs "24.4"))
 ;; Keywords: hypermedia, outlines, Org
 
 ;;; Commentary:
@@ -40,9 +40,6 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Code:
-
-(require 'dash)
-(require 's)
 
 (defvar org-sticky-header-old-hlf nil
   "Value of the header line when entering org-sticky-header mode.")
@@ -90,9 +87,7 @@ welcome.)"
   :type 'string)
 
 (defun org-sticky-header--fetch-stickyline ()
-  "Make the heading at the top of the current window sticky.
-Capture its heading line, and place it in the header line.
-If there is no heading, disable the header line."
+  "Return string of Org heading or outline path for display in header line."
   (save-excursion
     (goto-char (window-start))
     (when (or org-sticky-header-always-show-header
@@ -105,14 +100,18 @@ If there is no heading, disable the header line."
         ('nil (concat org-sticky-header-prefix (org-get-heading t t)))
         ('full (concat org-sticky-header-prefix (org-format-outline-path (org-get-outline-path t) (window-width) nil
                                                                          org-sticky-header-outline-path-separator)))
-        ('reversed (concat org-sticky-header-prefix
-                           ;; Using "🐱" "CAT FACE" as separator character. It needs to be a single character,
-                           ;; otherwise it could get truncated and cause splitting to fail, and the chances of this
-                           ;; character being in a heading is low enough...right?
-                           (->> (org-format-outline-path (org-get-outline-path t) (window-width) nil "🐱")
-                                (s-split "🐱")
-                                (nreverse)
-                                (s-join org-sticky-header-outline-path-reversed-separator))))))))
+        ('reversed
+         ;; Concat and truncate path ourselves since it's reversed.
+         ;; Using ASCII 31 "unit separator" (Unicode "Information separator one") as separator
+         (let ((s (concat org-sticky-header-prefix
+                          (mapconcat 'identity
+                                     (nreverse (org-split-string (org-format-outline-path (org-get-outline-path t)
+                                                                                          1000 nil "")
+                                                                 ""))
+                                     org-sticky-header-outline-path-reversed-separator))))
+           (if (> (length s) (window-width))
+               (concat (substring s 0 (- (window-width) 2)) "..")
+             s)))))))
 
 ;;;###autoload
 (define-minor-mode org-sticky-header-mode
