@@ -81,6 +81,14 @@ face settings.  (It would be nice to automate this.  Suggestions
 welcome.)"
   :type 'string)
 
+(defcustom org-sticky-header-outline-path-separator "/"
+  "String displayed between elements of outline paths."
+  :type 'string)
+
+(defcustom org-sticky-header-outline-path-reversed-separator "\\"
+  "String displayed between elements of reversed outline paths."
+  :type 'string)
+
 (defun org-sticky-header--fetch-stickyline ()
   "Make the heading at the top of the current window sticky.
 Capture its heading line, and place it in the header line.
@@ -92,7 +100,8 @@ If there is no heading, disable the header line."
       (org-back-to-heading)
       (pcase org-sticky-header-full-path
         ('nil (concat org-sticky-header-prefix (org-get-heading t t)))
-        ('full (concat org-sticky-header-prefix (org-format-outline-path (org-get-outline-path t) (window-width))))
+        ('full (concat org-sticky-header-prefix (org-format-outline-path (org-get-outline-path t) (window-width) nil
+                                                                         org-sticky-header-outline-path-separator)))
         ('reversed (concat org-sticky-header-prefix
                            ;; Using "🐱" "CAT FACE" as separator character. It needs to be a single character,
                            ;; otherwise it could get truncated and cause splitting to fail, and the chances of this
@@ -100,7 +109,7 @@ If there is no heading, disable the header line."
                            (->> (org-format-outline-path (org-get-outline-path t) (window-width) nil "🐱")
                                 (s-split "🐱")
                                 (nreverse)
-                                (s-join "\\"))))))))
+                                (s-join org-sticky-header-outline-path-reversed-separator))))))))
 
 ;;;###autoload
 (define-minor-mode org-sticky-header-mode
