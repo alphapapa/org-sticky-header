@@ -41,6 +41,8 @@
 
 ;;; Code:
 
+;;;; Variables
+
 (defvar org-sticky-header-old-hlf nil
   "Value of the header line when entering org-sticky-header mode.")
 
@@ -86,6 +88,8 @@ welcome.)"
   "String displayed between elements of reversed outline paths."
   :type 'string)
 
+;;;; Functions
+
 (defun org-sticky-header--fetch-stickyline ()
   "Return string of Org heading or outline path for display in header line."
   (save-excursion
@@ -112,6 +116,8 @@ welcome.)"
            (if (> (length s) (window-width))
                (concat (substring s 0 (- (window-width) 2)) "..")
              s)))))))
+
+;;;; Minor mode
 
 ;;;###autoload
 (define-minor-mode org-sticky-header-mode
