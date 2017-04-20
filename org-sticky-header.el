@@ -24,6 +24,10 @@
 
 ;; You probably want to add `org-sticky-func-mode' to your `org-mode-hook'.
 
+;; If `org-startup-indented' is enabled, the
+;; `org-sticky-header-prefix' will be automatically set to match the
+;; `org-indent-mode' prefixes; otherwise you may wish to customize it.
+
 ;;; License:
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -73,12 +77,17 @@ want this on, but if you only display the current heading, you
 might prefer to turn it off.  "
   :type 'boolean)
 
-(defcustom org-sticky-header-prefix "   "
+(defcustom org-sticky-header-prefix (when org-startup-indented
+                                      ;; Use the default function if `org-indent-mode' is enabled globally
+                                      ;; FIXME: What if `org-adapt-indentation' is used to actually indent text?
+                                      'org-sticky-header--indent-prefix)
   "Prefix to display before heading in header line.
-You can adjust this to help align the heading according to your
-face settings.  (It would be nice to automate this.  Suggestions
-welcome.)"
-  :type 'string)
+`org-indent-mode' users should use the default function.  Custom
+functions will be run with point on a heading."
+  :type '(choice (function-item :tag "`org-indent-mode' indentation" org-sticky-header--indent-prefix)
+                 (string :tag "Custom string" :value "   ")
+                 (function :tag "Custom function which returns a string")
+                 (const :tag "None" nil)))
 
 (defcustom org-sticky-header-outline-path-separator "/"
   "String displayed between elements of outline paths."
@@ -101,13 +110,13 @@ welcome.)"
         ;; Skip inline tasks
         (forward-line -1))
       (pcase org-sticky-header-full-path
-        ('nil (concat org-sticky-header-prefix (org-get-heading t t)))
-        ('full (concat org-sticky-header-prefix (org-format-outline-path (org-get-outline-path t) (window-width) nil
-                                                                         org-sticky-header-outline-path-separator)))
+        ('nil (concat (org-sticky-header--get-prefix) (org-get-heading t t)))
+        ('full (concat (org-sticky-header--get-prefix) (org-format-outline-path (org-get-outline-path t) (window-width) nil
+                                                                                org-sticky-header-outline-path-separator)))
         ('reversed
          ;; Concat and truncate path ourselves since it's reversed.
          ;; Using ASCII 31 "unit separator" (Unicode "Information separator one") as separator
-         (let ((s (concat org-sticky-header-prefix
+         (let ((s (concat (org-sticky-header--get-prefix)
                           (mapconcat 'identity
                                      (nreverse (org-split-string (org-format-outline-path (org-get-outline-path t)
                                                                                           1000 nil "")
@@ -116,6 +125,28 @@ welcome.)"
            (if (> (length s) (window-width))
                (concat (substring s 0 (- (window-width) 2)) "..")
              s)))))))
+
+(defun org-sticky-header--get-prefix ()
+  "Return prefix string depending on value of `org-sticky-header-prefix'."
+  (typecase org-sticky-header-prefix
+    (function (funcall org-sticky-header-prefix))
+    (string org-sticky-header-prefix)
+    (nil nil)))
+
+(defun org-sticky-header--indent-prefix ()
+  "Return indentation prefix for heading at point.
+`org-indent-mode' must be activated to use this function, which
+may be enabled globally by customizing `org-startup-indented'."
+  ;; Copied from `org-indent-set-line-properties'
+  (let* ((level (org-current-level))
+         (stars (if (<= level 1) ""
+                  (make-string (* (1- org-indent-indentation-per-level)
+                                  (1- level))
+                               ?*))))
+    (concat (org-add-props (concat stars (make-string level ?*))
+                nil 'face 'org-indent)
+            (and (> level 0)
+                 (char-to-string org-indent-boundary-char)))))
 
 ;;;; Minor mode
 

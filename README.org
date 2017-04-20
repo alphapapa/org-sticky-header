@@ -20,6 +20,14 @@ To install manually, put this file in your =load-path=, =(require 'org-sticky-he
 
 You'll probably want to add =org-sticky-header-mode= to your =org-mode-hook= too.
 
+If =org-startup-indented= is enabled, the =org-sticky-header-prefix= will be automatically set to match the =org-indent-mode= prefixes; otherwise you may wish to customize it.
+
+* Credits
+
++  Thanks to Steve Purcell and Syohei YOSHIDA for their tireless work curating MELPA.
++  Thanks to Carsten Dominik for inventing Org, and for his contributions to this package.
++  Thanks to Eric S. Fraga for his valuable feedback.
+
 * License
 
 GPLv3 or any later version.
