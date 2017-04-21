@@ -93,6 +93,14 @@ functions will be run with point on a heading."
   "String displayed between elements of reversed outline paths."
   :type 'string)
 
+(defcustom org-sticky-header-heading-star "*"
+  "String to show before heading.
+By default, show an asterisk, like in an Org buffer.  Changing
+this to something else may help distinguish the header line from
+headings in the buffer when `org-sticky-header-always-show-header'
+is enabled."
+  :type 'string)
+
 ;;;; Functions
 
 (defun org-sticky-header--fetch-stickyline ()
@@ -170,11 +178,12 @@ This will do the right thing both with and without `org-indent-mode'."
 			   (1- level))
 		      0)
 		    level -1)))
-	 (prefix (concat (make-string npre (if indent-mode ?\ ?*)) "* ")))
+	 (prefix (concat (make-string npre (if indent-mode ?\ ?*)) org-sticky-header-heading-star " ")))
     (org-add-props prefix nil 'face
 		   (if org-cycle-level-faces
 		       (setq org-f (nth (% (1- level) org-n-level-faces) org-level-faces))
 		     (setq org-f (nth (1- (min level org-n-level-faces)) org-level-faces))))))
+
 ;;;; Minor mode
 
 ;;;###autoload
