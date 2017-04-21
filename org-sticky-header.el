@@ -107,10 +107,12 @@ functions will be run with point on a heading."
       (outline-next-heading))
     (when (or org-sticky-header-always-show-header
               (not (org-at-heading-p)))
-      (while (and (org-back-to-heading)
-                  (org-inlinetask-in-task-p))
+      ;; Header should be shown
+      (when (fboundp 'org-inlinetask-in-task-p)
         ;; Skip inline tasks
-        (forward-line -1))
+        (while (and (org-back-to-heading)
+                    (org-inlinetask-in-task-p))
+          (forward-line -1)))
       (pcase org-sticky-header-full-path
         ('nil (concat (org-sticky-header--get-prefix) (org-get-heading t t)))
         ('full (concat (org-sticky-header--get-prefix) (org-format-outline-path (org-get-outline-path t) (window-width) nil
