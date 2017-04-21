@@ -125,7 +125,7 @@ is enabled."
          ;; FIXME: Convert cond back to pcase, but one compatible with Emacs 24
          ((null org-sticky-header-full-path)
           (concat (org-sticky-header--get-prefix)
-                  (org-get-heading t t)))
+                  (org-sticky-header--get-sanitized-heading)))
          ((eq org-sticky-header-full-path 'full)
           (concat (org-sticky-header--get-prefix)
                   (org-format-outline-path (org-get-outline-path t)
@@ -143,6 +143,20 @@ is enabled."
                         "..")
               s)))
          (t nil))))))
+
+(defun org-sticky-header--get-sanitized-heading ()
+  "Return sanitized result of `org-get-heading'.
+The \"%\" character is special in header lines, so it must be escaped."
+  (let ((heading (org-get-heading t t))
+        (start-from 0))
+    (while (string-match "%" heading start-from)
+      (let* ((beg (match-beginning 0))
+             (properties (text-properties-at beg heading))
+             (replacement "%%"))
+        (add-text-properties 0 2 properties replacement)
+        (setf (substring heading beg (1+ beg)) replacement)
+        (setq start-from (+ 2 (match-end 0)))))
+    heading))
 
 (defun org-sticky-header--get-prefix ()
   "Return prefix string depending on value of `org-sticky-header-prefix'."
