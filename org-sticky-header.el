@@ -113,22 +113,47 @@ functions will be run with point on a heading."
         (while (and (org-back-to-heading)
                     (org-inlinetask-in-task-p))
           (forward-line -1)))
-      (pcase org-sticky-header-full-path
-        ('nil (concat (org-sticky-header--get-prefix) (org-get-heading t t)))
-        ('full (concat (org-sticky-header--get-prefix) (org-format-outline-path (org-get-outline-path t) (window-width) nil
-                                                                                org-sticky-header-outline-path-separator)))
-        ('reversed
-         ;; Concat and truncate path ourselves since it's reversed.
-         ;; Using ASCII 31 "unit separator" (Unicode "Information separator one") as separator
-         (let ((s (concat (org-sticky-header--get-prefix)
-                          (mapconcat 'identity
-                                     (nreverse (org-split-string (org-format-outline-path (org-get-outline-path t)
-                                                                                          1000 nil "")
-                                                                 ""))
-                                     org-sticky-header-outline-path-reversed-separator))))
-           (if (> (length s) (window-width))
-               (concat (substring s 0 (- (window-width) 2)) "..")
-             s)))))))
+      (cond
+       ((null org-sticky-header-full-path)
+        (let nil
+          (concat
+           (org-sticky-header--get-prefix)
+           (org-get-heading t t))))
+       ((eq org-sticky-header-full-path 'full)
+        (let nil
+          (concat
+           (org-sticky-header--get-prefix)
+           (org-format-outline-path
+            (org-get-outline-path t)
+            (window-width)
+            nil org-sticky-header-outline-path-separator))))
+       ((eq org-sticky-header-full-path 'reversed)
+        (let nil
+          (let
+              ((s
+                (concat
+                 (org-sticky-header--get-prefix)
+                 (mapconcat 'identity
+                            (nreverse
+                             (org-split-string
+                              (org-format-outline-path
+                               (org-get-outline-path t)
+                               1000 nil "")
+                              ""))
+                            org-sticky-header-outline-path-reversed-separator))))
+            (if
+                (>
+                 (length s)
+                 (window-width))
+                (concat
+                 (substring s 0
+                            (-
+                             (window-width)
+                             2))
+                 "..")
+              s))))
+       (t nil))
+      )))
 
 (defun org-sticky-header--get-prefix ()
   "Return prefix string depending on value of `org-sticky-header-prefix'."
