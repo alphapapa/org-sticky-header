@@ -44,6 +44,10 @@
 
 ;;; Code:
 
+;;;; Requirements
+
+(require 'cl-lib)
+
 ;;;; Variables
 
 (defvar org-sticky-header-old-hlf nil
@@ -161,7 +165,7 @@ is enabled."
 
 (defun org-sticky-header--get-prefix ()
   "Return prefix string depending on value of `org-sticky-header-prefix'."
-  (typecase org-sticky-header-prefix
+  (cl-typecase org-sticky-header-prefix
     (function (funcall org-sticky-header-prefix))
     (string org-sticky-header-prefix)
     (nil nil)))
