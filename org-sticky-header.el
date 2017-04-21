@@ -99,57 +99,57 @@ functions will be run with point on a heading."
   "Return string of Org heading or outline path for display in header line."
   (save-excursion
     (goto-char (window-start))
-    (when (org-before-first-heading-p)
-      (outline-next-heading))
-    (when (or org-sticky-header-always-show-header
-              (not (org-at-heading-p)))
-      ;; Header should be shown
-      (when (fboundp 'org-inlinetask-in-task-p)
-        ;; Skip inline tasks
-        (while (and (org-back-to-heading)
-                    (org-inlinetask-in-task-p))
-          (forward-line -1)))
-      (cond
-       ((null org-sticky-header-full-path)
-        (let nil
-          (concat
-           (org-sticky-header--get-prefix)
-           (org-get-heading t t))))
-       ((eq org-sticky-header-full-path 'full)
-        (let nil
-          (concat
-           (org-sticky-header--get-prefix)
-           (org-format-outline-path
-            (org-get-outline-path t)
-            (window-width)
-            nil org-sticky-header-outline-path-separator))))
-       ((eq org-sticky-header-full-path 'reversed)
-        (let nil
-          (let
-              ((s
-                (concat
-                 (org-sticky-header--get-prefix)
-                 (mapconcat 'identity
-                            (nreverse
-                             (org-split-string
-                              (org-format-outline-path
-                               (org-get-outline-path t)
-                               1000 nil "")
-                              ""))
-                            org-sticky-header-outline-path-reversed-separator))))
-            (if
-                (>
-                 (length s)
-                 (window-width))
-                (concat
-                 (substring s 0
-                            (-
-                             (window-width)
-                             2))
-                 "..")
-              s))))
-       (t nil))
-      )))
+    (unless (org-before-first-heading-p)
+      ;; No non-header lines above top displayed header
+      (when (or org-sticky-header-always-show-header
+                (not (org-at-heading-p)))
+        ;; Header should be shown
+        (when (fboundp 'org-inlinetask-in-task-p)
+          ;; Skip inline tasks
+          (while (and (org-back-to-heading)
+                      (org-inlinetask-in-task-p))
+            (forward-line -1)))
+        (cond
+         ((null org-sticky-header-full-path)
+          (let nil
+            (concat
+             (org-sticky-header--get-prefix)
+             (org-get-heading t t))))
+         ((eq org-sticky-header-full-path 'full)
+          (let nil
+            (concat
+             (org-sticky-header--get-prefix)
+             (org-format-outline-path
+              (org-get-outline-path t)
+              (window-width)
+              nil org-sticky-header-outline-path-separator))))
+         ((eq org-sticky-header-full-path 'reversed)
+          (let nil
+            (let
+                ((s
+                  (concat
+                   (org-sticky-header--get-prefix)
+                   (mapconcat 'identity
+                              (nreverse
+                               (org-split-string
+                                (org-format-outline-path
+                                 (org-get-outline-path t)
+                                 1000 nil "")
+                                ""))
+                              org-sticky-header-outline-path-reversed-separator))))
+              (if
+                  (>
+                   (length s)
+                   (window-width))
+                  (concat
+                   (substring s 0
+                              (-
+                               (window-width)
+                               2))
+                   "..")
+                s))))
+         (t nil))
+        ))))
 
 (defun org-sticky-header--get-prefix ()
   "Return prefix string depending on value of `org-sticky-header-prefix'."
