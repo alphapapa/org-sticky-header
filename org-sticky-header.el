@@ -47,6 +47,7 @@
 ;;;; Requirements
 
 (require 'cl-lib)
+(require 'org)
 
 ;;;; Variables
 
