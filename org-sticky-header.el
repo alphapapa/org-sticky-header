@@ -22,11 +22,10 @@
 ;; To install manually, put this file in your `load-path', require
 ;; `org-sticky-header' in your init file, and run the same command.
 
-;; You probably want to add `org-sticky-func-mode' to your `org-mode-hook'.
+;; You probably want to add `org-sticky-header-mode' to your `org-mode-hook'.
 
-;; If `org-startup-indented' is enabled, the
-;; `org-sticky-header-prefix' will be automatically set to match the
-;; `org-indent-mode' prefixes; otherwise you may wish to customize it.
+;; By default, the line will be indented like a real headline.  To
+;; change this, configure `org-sticky-header-prefix'.
 
 ;;; License:
 
@@ -77,14 +76,11 @@ want this on, but if you only display the current heading, you
 might prefer to turn it off.  "
   :type 'boolean)
 
-(defcustom org-sticky-header-prefix (when org-startup-indented
-                                      ;; Use the default function if `org-indent-mode' is enabled globally
-                                      ;; FIXME: What if `org-adapt-indentation' is used to actually indent text?
-                                      'org-sticky-header--indent-prefix)
+(defcustom org-sticky-header-prefix 'org-sticky-header--indent-prefix
   "Prefix to display before heading in header line.
 `org-indent-mode' users should use the default function.  Custom
 functions will be run with point on a heading."
-  :type '(choice (function-item :tag "`org-indent-mode' indentation" org-sticky-header--indent-prefix)
+  :type '(choice (function-item :tag "Like real headline" org-sticky-header--indent-prefix)
                  (string :tag "Custom string" :value "   ")
                  (function :tag "Custom function which returns a string")
                  (const :tag "None" nil)))
@@ -164,19 +160,21 @@ functions will be run with point on a heading."
 
 (defun org-sticky-header--indent-prefix ()
   "Return indentation prefix for heading at point.
-`org-indent-mode' must be activated to use this function, which
-may be enabled globally by customizing `org-startup-indented'."
-  ;; Copied from `org-indent-set-line-properties'
+This will do the right thing both with and without `org-indent-mode'."
+  ;; Modelled after `org-indent-set-line-properties'
   (let* ((level (org-current-level))
-         (stars (if (<= level 1) ""
-                  (make-string (* (1- org-indent-indentation-per-level)
-                                  (1- level))
-                               ?*))))
-    (concat (org-add-props (concat stars (make-string level ?*))
-                nil 'face 'org-indent)
-            (and (> level 0)
-                 (char-to-string org-indent-boundary-char)))))
-
+	 (indent-mode (bound-and-true-p org-indent-mode))
+	 (npre (if (<= level 1) 0
+		 (+ (if indent-mode
+			(* (1- org-indent-indentation-per-level)
+			   (1- level))
+		      0)
+		    level -1)))
+	 (prefix (concat (make-string npre (if indent-mode ?\ ?*)) "* ")))
+    (org-add-props prefix nil 'face
+		   (if org-cycle-level-faces
+		       (setq org-f (nth (% (1- level) org-n-level-faces) org-level-faces))
+		     (setq org-f (nth (1- (min level org-n-level-faces)) org-level-faces))))))
 ;;;; Minor mode
 
 ;;;###autoload
