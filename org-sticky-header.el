@@ -103,6 +103,8 @@ functions will be run with point on a heading."
   "Return string of Org heading or outline path for display in header line."
   (save-excursion
     (goto-char (window-start))
+    (when (org-before-first-heading-p)
+      (outline-next-heading))
     (when (or org-sticky-header-always-show-header
               (not (org-at-heading-p)))
       (while (and (org-back-to-heading)
