@@ -54,10 +54,16 @@
 (defvar org-sticky-header-old-hlf nil
   "Value of the header line when entering org-sticky-header mode.")
 
+(defvar-local org-sticky-header-stickyline nil
+  "Value of header line")
+(put 'org-sticky-header-stickyline 'risky-local-variable t)
+
 (defconst org-sticky-header-header-line-format
-  '(:eval (list
-           (propertize " " 'display '((space :align-to 0)))
-           (org-sticky-header--fetch-stickyline)))
+  '(:eval (progn
+            (setq org-sticky-header-stickyline (org-sticky-header--fetch-stickyline))
+            (list
+             (propertize " " 'display '((space :align-to 0)))
+             'org-sticky-header-stickyline)))
   "The header line format used by stickyfunc mode.")
 
 (defgroup org-sticky-header nil
@@ -126,13 +132,7 @@ is enabled."
          ;; FIXME: Convert cond back to pcase, but one compatible with Emacs 24
          ((null org-sticky-header-full-path)
           (concat (org-sticky-header--get-prefix)
-                  ;; Remove "%" from heading, which is a special
-                  ;; character in header lines.
-                  ;; `org-get-outline-path' already does this.
-
-                  ;; FIXME: It would be better to escape the "%" by doubling it, and apply
-                  ;; the text properties from the single "%" to the doubled one
-                  (replace-regexp-in-string "%" "" (org-get-heading t) t t)))
+                  (org-get-heading t t)))
          ((eq org-sticky-header-full-path 'full)
           (concat (org-sticky-header--get-prefix)
                   (org-format-outline-path (org-get-outline-path t)
