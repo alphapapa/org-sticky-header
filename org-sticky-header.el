@@ -126,7 +126,10 @@ is enabled."
          ;; FIXME: Convert cond back to pcase, but one compatible with Emacs 24
          ((null org-sticky-header-full-path)
           (concat (org-sticky-header--get-prefix)
-                  ;; Remove "%" from heading, which is a special character in header lines.
+                  ;; Remove "%" from heading, which is a special
+                  ;; character in header lines.
+                  ;; `org-get-outline-path' already does this.
+
                   ;; FIXME: It would be better to escape the "%" by doubling it, and apply
                   ;; the text properties from the single "%" to the doubled one
                   (replace-regexp-in-string "%" "" (org-get-heading t) t t)))
