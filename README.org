@@ -29,7 +29,7 @@ If =org-startup-indented= is enabled, the =org-sticky-header-prefix= will be aut
 +  Thanks to Eric S. Fraga for his valuable feedback.
 +  Thanks to [[https://github.com/kaushalmodi][Kaushal Modi]] for his feedback and help.
 +  Thanks to [[https://github.com/angrybacon][Mathieu Marques]] for his feedback and persistent bug-hunting.
-+  Thanks to [[https://github.com/aaronjensen][Aaron Jensen]] for his help tracking down a bug in Emacs and in this package.
++  Thanks to [[https://github.com/aaronjensen][Aaron Jensen]] for his help tracking down a bug in [[https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26586][Emacs]] and in [[https://github.com/alphapapa/org-sticky-header/pull/7][this package]].
 
 * License
 
