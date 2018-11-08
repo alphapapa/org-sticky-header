@@ -112,12 +112,17 @@ headings in the buffer when `org-sticky-header-always-show-header'
 is enabled."
   :type 'string)
 
+(defcustom org-sticky-header-at-point nil
+  "Show the heading at point instead of heading at the top of the window."
+  :type 'boolean)
+
 ;;;; Functions
 
 (defun org-sticky-header--fetch-stickyline ()
   "Return string of Org heading or outline path for display in header line."
   (save-excursion
-    (goto-char (window-start))
+    (unless org-sticky-header-at-point
+      (goto-char (window-start)))
     (unless (org-before-first-heading-p)
       ;; No non-header lines above top displayed header
       (when (or org-sticky-header-always-show-header
