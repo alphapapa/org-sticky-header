@@ -24,6 +24,11 @@ If =org-startup-indented= is enabled, the =org-sticky-header-prefix= will be aut
 
 * Changelog
 
+** 1.0.1
+
+*Fixed*
++  Avoid infinite loop when buffer is narrowed to a region without a parent heading.  (See [[https://github.com/alphapapa/org-sticky-header/issues/8][#8]].  Thanks to [[https://github.com/chasberry][Charles C. Berry]].)
+
 ** 1.0.0
 
 First tagged release.
