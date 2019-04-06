@@ -22,6 +22,12 @@ You'll probably want to add =org-sticky-header-mode= to your =org-mode-hook= too
 
 If =org-startup-indented= is enabled, the =org-sticky-header-prefix= will be automatically set to match the =org-indent-mode= prefixes; otherwise you may wish to customize it.
 
+* Changelog
+
+** 1.0.0
+
+First tagged release.
+
 * Credits
 
 +  Thanks to Steve Purcell and Syohei YOSHIDA for their tireless work curating MELPA.
