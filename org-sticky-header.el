@@ -104,11 +104,11 @@ functions will be run with point on a heading."
                  (function :tag "Custom function which returns a string")
                  (const :tag "None" nil)))
 
-(defcustom org-sticky-header-outline-path-separator "/"
+(defcustom org-sticky-header-outline-path-separator " ❯ "
   "String displayed between elements of outline paths."
   :type 'string)
 
-(defcustom org-sticky-header-outline-path-reversed-separator "\\"
+(defcustom org-sticky-header-outline-path-reversed-separator " ❮ "
   "String displayed between elements of reversed outline paths."
   :type 'string)
 
@@ -119,6 +119,14 @@ this to something else may help distinguish the header line from
 headings in the buffer when `org-sticky-header-always-show-header'
 is enabled."
   :type 'string)
+
+(defcustom org-sticky-header-show-keyword t
+  "Show to-do keyword before heading text."
+  :type 'boolean)
+
+(defcustom org-sticky-header-show-priority t
+  "Show priority before heading text."
+  :type 'boolean)
 
 ;;;; Functions
 
@@ -150,24 +158,45 @@ is enabled."
           ;; FIXME: Convert cond back to pcase, but one compatible with Emacs 24
           ((null org-sticky-header-full-path)
            (concat (org-sticky-header--get-prefix)
-                   (org-get-heading t t)))
+                   (org-sticky-header--heading-string)))
           ((eq org-sticky-header-full-path 'full)
            (concat (org-sticky-header--get-prefix)
-                   (org-format-outline-path (org-get-outline-path t)
-                                            (window-width)
-                                            nil org-sticky-header-outline-path-separator)))
+                   (mapconcat 'identity
+                              (nreverse
+                               (save-excursion
+                                 (cl-loop collect (org-sticky-header--heading-string)
+                                          while (org-up-heading-safe))))
+                              org-sticky-header-outline-path-separator)))
           ((eq org-sticky-header-full-path 'reversed)
-           (let ((s (concat (org-sticky-header--get-prefix)
-                            (mapconcat 'identity
-                                       (nreverse (org-split-string (org-format-outline-path (org-get-outline-path t)
-                                                                                            1000 nil "")
-                                                                   ""))
-                                       org-sticky-header-outline-path-reversed-separator))))
+           (let ((s (concat
+                     (org-sticky-header--get-prefix)
+                     (mapconcat 'identity
+                                (save-excursion
+                                  (cl-loop collect (org-sticky-header--heading-string)
+                                           while (org-up-heading-safe)))
+                                org-sticky-header-outline-path-reversed-separator))))
              (if (> (length s) (window-width))
                  (concat (substring s 0 (- (window-width) 2))
                          "..")
                s)))
           (t "")))))))
+
+(defun org-sticky-header--heading-string ()
+  "Return string for heading at point.
+According to `org-sticky-header' options."
+  ;; FIXME: Update minimum Emacs version for `pcase-let*'.
+  (pcase-let* ((`(,level ,_reduced ,keyword ,priority ,heading ,_tags)
+                (org-heading-components)))
+    (setf heading (org-link-display-format heading))
+    (concat
+     (when (and org-sticky-header-show-keyword keyword)
+       (concat (propertize keyword 'face (org-get-todo-face keyword))
+               " "))
+     (when (and org-sticky-header-show-priority priority)
+       (concat (propertize (concat "[#" (char-to-string priority) "]")
+                           'face 'org-priority)
+               " "))
+     (propertize heading 'face (nth (1- level) org-level-faces)))))
 
 (defun org-sticky-header--get-prefix ()
   "Return prefix string depending on value of `org-sticky-header-prefix'."
