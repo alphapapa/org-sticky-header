@@ -90,9 +90,9 @@ When this is on, and the top line of the buffer is a heading,
 you'll see the heading shown twice: once in the header and once
 in the buffer.  But since the header can look different than the
 heading (i.e. it can show the full path), it shouldn't
-necessarily disappear. If you use full-path display, you probably
-want this on, but if you only display the current heading, you
-might prefer to turn it off.  "
+necessarily disappear.  If you use full-path display, you
+probably want this on, but if you only display the current
+heading, you might prefer to turn it off."
   :type 'boolean)
 
 (defcustom org-sticky-header-prefix 'org-sticky-header--indent-prefix
