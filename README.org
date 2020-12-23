@@ -24,7 +24,7 @@ If =org-startup-indented= is enabled, the =org-sticky-header-prefix= will be aut
 
 * Changelog
 
-** 1.1-pre
+** 1.1
 
 *Added*
 +  Clicking on header line jumps to heading in the buffer.  (Thanks to [[https://github.com/technician77][technician77]] for suggesting.)
