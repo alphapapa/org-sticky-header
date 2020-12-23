@@ -34,6 +34,7 @@ If =org-startup-indented= is enabled, the =org-sticky-header-prefix= will be aut
 
 *Fixed*
 +  Error message was displayed when point was before first heading or in an empty document.  (Thanks to [[https://github.com/kaushalmodi][Kaushal Modi]].)
++  Use ~string-width~ instead of ~length~ where appropriate.
 
 ** 1.0.1
 

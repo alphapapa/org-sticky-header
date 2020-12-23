@@ -163,7 +163,7 @@ is enabled."
                                                                                             1000 nil "")
                                                                    ""))
                                        org-sticky-header-outline-path-reversed-separator))))
-             (if (> (length s) (window-width))
+             (if (> (string-width s) (window-width))
                  (concat (substring s 0 (- (window-width) 2))
                          "..")
                s)))
