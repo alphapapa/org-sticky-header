@@ -104,11 +104,11 @@ functions will be run with point on a heading."
                  (function :tag "Custom function which returns a string")
                  (const :tag "None" nil)))
 
-(defcustom org-sticky-header-outline-path-separator "/"
+(defcustom org-sticky-header-outline-path-separator " ❯ "
   "String displayed between elements of outline paths."
   :type 'string)
 
-(defcustom org-sticky-header-outline-path-reversed-separator "\\"
+(defcustom org-sticky-header-outline-path-reversed-separator " ❮ "
   "String displayed between elements of reversed outline paths."
   :type 'string)
 

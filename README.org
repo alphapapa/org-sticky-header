@@ -29,6 +29,9 @@ If =org-startup-indented= is enabled, the =org-sticky-header-prefix= will be aut
 *Added*
 +  Clicking on header line jumps to heading in the buffer.  (Thanks to [[https://github.com/technician77][technician77]] for suggesting.)
 
+*Changed*
++  Default path separator strings changed to =❯= and =❮=.
+
 *Fixed*
 +  Error message was displayed when point was before first heading or in an empty document.  (Thanks to [[https://github.com/kaushalmodi][Kaushal Modi]].)
 
