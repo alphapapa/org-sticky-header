@@ -147,7 +147,7 @@ is enabled."
                        (org-inlinetask-in-task-p))
              (forward-line -1)))
          (cond
-          ;; FIXME: Convert cond back to pcase, but one compatible with Emacs 24
+          ;; TODO: Update minimum Emacs version and use `pcase'.
           ((null org-sticky-header-full-path)
            (concat (org-sticky-header--get-prefix)
                    (org-get-heading t t)))
