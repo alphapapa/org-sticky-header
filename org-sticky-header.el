@@ -120,6 +120,14 @@ headings in the buffer when `org-sticky-header-always-show-header'
 is enabled."
   :type 'string)
 
+(defcustom org-sticky-header-show-keyword t
+  "Show to-do keyword before heading text."
+  :type 'boolean)
+
+(defcustom org-sticky-header-show-priority t
+  "Show priority before heading text."
+  :type 'boolean)
+
 ;;;; Functions
 
 (defun org-sticky-header-goto-heading (event)
@@ -150,24 +158,48 @@ is enabled."
           ;; TODO: Update minimum Emacs version and use `pcase'.
           ((null org-sticky-header-full-path)
            (concat (org-sticky-header--get-prefix)
-                   (org-get-heading t t)))
+                   (org-sticky-header--heading-string)))
           ((eq org-sticky-header-full-path 'full)
            (concat (org-sticky-header--get-prefix)
-                   (org-format-outline-path (org-get-outline-path t)
-                                            (window-width)
-                                            nil org-sticky-header-outline-path-separator)))
+                   (mapconcat 'identity
+                              (nreverse
+                               (save-excursion
+                                 (cl-loop collect (org-sticky-header--heading-string)
+                                          while (org-up-heading-safe))))
+                              org-sticky-header-outline-path-separator)))
           ((eq org-sticky-header-full-path 'reversed)
-           (let ((s (concat (org-sticky-header--get-prefix)
-                            (mapconcat 'identity
-                                       (nreverse (org-split-string (org-format-outline-path (org-get-outline-path t)
-                                                                                            1000 nil "")
-                                                                   ""))
-                                       org-sticky-header-outline-path-reversed-separator))))
+           (let ((s (concat
+                     (org-sticky-header--get-prefix)
+                     (mapconcat 'identity
+                                (save-excursion
+                                  (cl-loop collect (org-sticky-header--heading-string)
+                                           while (org-up-heading-safe)))
+                                org-sticky-header-outline-path-reversed-separator))))
              (if (> (string-width s) (window-width))
                  (concat (substring s 0 (- (window-width) 2))
                          "..")
                s)))
           (t "")))))))
+
+(defun org-sticky-header--heading-string ()
+  "Return string for heading at point.
+According to `org-sticky-header' options."
+  ;; TODO: Update minimum Emacs version and use `pcase-let*'.
+  (let* ((components (org-heading-components))
+         (level (nth 0 components))
+         (keyword (nth 2 components))
+         (priority (nth 3 components))
+         (heading (org-link-display-format (nth 4 components)))
+         (face (nth (1- level) org-level-faces)))
+    (concat
+     (when (and org-sticky-header-show-keyword keyword)
+       (concat (propertize keyword 'face (org-get-todo-face keyword))
+               " "))
+     (when (and org-sticky-header-show-priority priority)
+       (concat (propertize (concat "[#" (char-to-string priority) "]")
+                           'face 'org-priority)
+               " "))
+     (propertize heading 'face face))))
 
 (defun org-sticky-header--get-prefix ()
   "Return prefix string depending on value of `org-sticky-header-prefix'."
