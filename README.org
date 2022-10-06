@@ -1,7 +1,3 @@
-#+BEGIN_HTML
-<a href=https://alphapapa.github.io/dont-tread-on-emacs/><img src="dont-tread-on-emacs-150.png" align="right"></a>
-#+END_HTML
-
 * org-sticky-header
 
 [[https://melpa.org/#/org-sticky-header][file:https://melpa.org/packages/org-sticky-header-badge.svg]] [[https://stable.melpa.org/#/org-sticky-header][file:https://stable.melpa.org/packages/org-sticky-header-badge.svg]]
