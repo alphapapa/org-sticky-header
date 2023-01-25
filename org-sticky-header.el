@@ -189,7 +189,8 @@ According to `org-sticky-header' options."
          (level (nth 0 components))
          (keyword (nth 2 components))
          (priority (nth 3 components))
-         (heading (org-link-display-format (nth 4 components)))
+         (heading (nth 4 components))
+         (heading (if heading (org-link-display-format heading)))
          (face (nth (1- level) org-level-faces)))
     (concat
      (when (and org-sticky-header-show-keyword keyword)
@@ -199,7 +200,8 @@ According to `org-sticky-header' options."
        (concat (propertize (concat "[#" (char-to-string priority) "]")
                            'face 'org-priority)
                " "))
-     (propertize heading 'face face))))
+     (if heading
+         (propertize heading 'face face)))))
 
 (defun org-sticky-header--get-prefix ()
   "Return prefix string depending on value of `org-sticky-header-prefix'."
