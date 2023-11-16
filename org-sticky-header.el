@@ -142,44 +142,43 @@ is enabled."
   "Return string of Org heading or outline path for display in header line."
   (org-with-wide-buffer
    (goto-char (window-start))
-   (if (org-before-first-heading-p)
+   (if (or (org-before-first-heading-p)
+           (and (not org-sticky-header-always-show-header)
+                (org-at-heading-p)))
        ""
      (progn
        ;; No non-header lines above top displayed header
-       (when (or org-sticky-header-always-show-header
-                 (not (org-at-heading-p)))
-         ;; Header should be shown
-         (when (fboundp 'org-inlinetask-in-task-p)
-           ;; Skip inline tasks
-           (while (and (org-back-to-heading)
-                       (org-inlinetask-in-task-p))
-             (forward-line -1)))
-         (cond
-          ;; TODO: Update minimum Emacs version and use `pcase'.
-          ((null org-sticky-header-full-path)
-           (concat (org-sticky-header--get-prefix)
-                   (org-sticky-header--heading-string)))
-          ((eq org-sticky-header-full-path 'full)
-           (concat (org-sticky-header--get-prefix)
+       (when (fboundp 'org-inlinetask-in-task-p)
+         ;; Skip inline tasks
+         (while (and (org-back-to-heading)
+                     (org-inlinetask-in-task-p))
+           (forward-line -1)))
+       (cond
+        ;; TODO: Update minimum Emacs version and use `pcase'.
+        ((null org-sticky-header-full-path)
+         (concat (org-sticky-header--get-prefix)
+                 (org-sticky-header--heading-string)))
+        ((eq org-sticky-header-full-path 'full)
+         (concat (org-sticky-header--get-prefix)
+                 (mapconcat 'identity
+                            (nreverse
+                             (save-excursion
+                               (cl-loop collect (org-sticky-header--heading-string)
+                                        while (org-up-heading-safe))))
+                            org-sticky-header-outline-path-separator)))
+        ((eq org-sticky-header-full-path 'reversed)
+         (let ((s (concat
+                   (org-sticky-header--get-prefix)
                    (mapconcat 'identity
-                              (nreverse
-                               (save-excursion
-                                 (cl-loop collect (org-sticky-header--heading-string)
-                                          while (org-up-heading-safe))))
-                              org-sticky-header-outline-path-separator)))
-          ((eq org-sticky-header-full-path 'reversed)
-           (let ((s (concat
-                     (org-sticky-header--get-prefix)
-                     (mapconcat 'identity
-                                (save-excursion
-                                  (cl-loop collect (org-sticky-header--heading-string)
-                                           while (org-up-heading-safe)))
-                                org-sticky-header-outline-path-reversed-separator))))
-             (if (> (string-width s) (window-width))
-                 (concat (substring s 0 (- (window-width) 2))
-                         "..")
-               s)))
-          (t "")))))))
+                              (save-excursion
+                                (cl-loop collect (org-sticky-header--heading-string)
+                                         while (org-up-heading-safe)))
+                              org-sticky-header-outline-path-reversed-separator))))
+           (if (> (string-width s) (window-width))
+               (concat (substring s 0 (- (window-width) 2))
+                       "..")
+             s)))
+        (t ""))))))
 
 (defun org-sticky-header--heading-string ()
   "Return string for heading at point.

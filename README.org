@@ -22,7 +22,8 @@ If =org-startup-indented= is enabled, the =org-sticky-header-prefix= will be aut
 
 ** 1.1.1-pre
 
-Nothing new yet.
+*Fixes*
++ Error when ~org-sticky-header-always-show-header~ is disabled.  ([[https://github.com/alphapapa/org-sticky-header/issues/27][#27]].  Thanks to [[https://github.com/kings2u][kings2u]] for reporting.)
 
 ** 1.1
 
