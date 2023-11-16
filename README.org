@@ -20,6 +20,10 @@ If =org-startup-indented= is enabled, the =org-sticky-header-prefix= will be aut
 
 * Changelog
 
+** 1.1.1-pre
+
+Nothing new yet.
+
 ** 1.1
 
 *Added*

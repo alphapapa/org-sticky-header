@@ -2,7 +2,7 @@
 
 ;; Author: Adam Porter <adam@alphapapa.net>
 ;; Url: http://github.com/alphapapa/org-sticky-header
-;; Version: 1.1
+;; Version: 1.1.1-pre
 ;; Package-Requires: ((emacs "24.4") (org "8.3.5"))
 ;; Keywords: hypermedia, outlines, Org
 
