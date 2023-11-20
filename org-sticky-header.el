@@ -128,6 +128,10 @@ is enabled."
   "Show priority before heading text."
   :type 'boolean)
 
+(defcustom org-sticky-header-default-face nil
+  "Using `header-line' default theme instead of `org-level-faces'."
+  :type 'boolean)
+
 ;;;; Functions
 
 (defun org-sticky-header-goto-heading (event)
@@ -184,22 +188,18 @@ is enabled."
 (defun org-sticky-header--heading-string ()
   "Return string for heading at point.
 According to `org-sticky-header' options."
-  ;; TODO: Update minimum Emacs version and use `pcase-let*'.
-  (let* ((components (org-heading-components))
-         (level (nth 0 components))
-         (keyword (nth 2 components))
-         (priority (nth 3 components))
-         (heading (org-link-display-format (nth 4 components)))
-         (face (nth (1- level) org-level-faces)))
+  (pcase-let* ((`(,level _ ,keyword ,priority ,heading) (org-heading-components))
+         (face (unless org-sticky-header-default-face (nth (1- level) org-level-faces))))
     (concat
-     (when (and org-sticky-header-show-keyword keyword)
-       (concat (propertize keyword 'face (org-get-todo-face keyword))
-               " "))
-     (when (and org-sticky-header-show-priority priority)
-       (concat (propertize (concat "[#" (char-to-string priority) "]")
-                           'face 'org-priority)
-               " "))
-     (propertize heading 'face face))))
+      (when (and org-sticky-header-show-keyword keyword)
+	 (concat (propertize keyword
+		 'face `((:foreground ,(face-foreground (org-get-todo-face keyword) nil 1)) ,face))
+	     " "))
+      (when (and org-sticky-header-show-priority priority)
+	 (concat (propertize (concat "[#" (char-to-string priority) "]")
+		 'face `((:foreground ,(face-foreground 'org-priority nil 1)) ,face))
+	     " "))
+      (propertize (org-link-display-format heading) 'face face))))
 
 (defun org-sticky-header--get-prefix ()
   "Return prefix string depending on value of `org-sticky-header-prefix'."
